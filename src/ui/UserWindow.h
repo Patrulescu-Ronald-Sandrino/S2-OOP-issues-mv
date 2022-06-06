@@ -17,10 +17,9 @@
 class UserWindow: public QWidget {
 Q_OBJECT
 private:
-    IssueRepository& issueRepository;
     User user;
 public:
-    UserWindow(QWidget *parent, IssueRepository &issueRepository, const User &user);
+    UserWindow(QWidget *parent, IssuesModel* issuesModel, const User &user);
 
 private:
     IssuesModel* issuesModel{};
@@ -36,8 +35,11 @@ private:
     void connectSignalsAndSlots();
 
     int getCurrentRow() const;
+
+    template <typename A>
+    void callAndHandleAction(A action) const;
 private slots:
-    void handleSelectionChanged();
+
     void handleRemoveIssueButton();
     void handleAddIssueButton();
     void handleResolveIssueButton();

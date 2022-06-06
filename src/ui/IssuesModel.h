@@ -26,13 +26,14 @@ public:
 
     Qt::ItemFlags flags(const QModelIndex &index) const override;
 
-    // TODO: IDEA: change the parameter to -int row- and then initialize the model in the constructor in order
-    //  to not have access in this class to the repository, after the window is created
-    void removeIssue(const Issue& issue);
+    void removeIssue(int row);
 
     void addIssue(const string& description, const User& user);
 
     void solveIssue(int row, const User& user);
+
+private:
+    void throwIfRowIsInvalid(int row) noexcept(false);
 };
 
 

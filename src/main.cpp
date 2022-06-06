@@ -11,6 +11,7 @@ using namespace std;
 int main(int argc, char *argv[]) {
     // read the issues from file and create the repository
     IssueRepository issueRepository("issues.txt");
+    IssuesModel issuesModel(issueRepository);
 
     // open the users file
     ifstream file("users.txt");
@@ -24,7 +25,7 @@ int main(int argc, char *argv[]) {
     User user;
 
     while (file >> user) { // read the users and create a window (widget) for each user
-        auto userWindow = new UserWindow(nullptr, issueRepository, user);
+        auto userWindow = new UserWindow(nullptr, &issuesModel, user);
         userWindow->show();
         userWindows.push_back(userWindow);
     }

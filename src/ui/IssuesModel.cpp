@@ -55,26 +55,44 @@ Qt::ItemFlags IssuesModel::flags(const QModelIndex &index) const {
     return QAbstractTableModel::flags(index);
 }
 
-void IssuesModel::removeIssue(const Issue& issue) {
+void IssuesModel::removeIssue(int row) {
+    throwIfRowIsInvalid(row);
+    auto issue = issueRepository.getAll()[row];
+    beginRemoveRows(QModelIndex{}, row, row);
+
+    if (issue.isOpen()) {
+        throw std::runtime_error("issue is not closed. can only remove closed issues");
+    }
+
     issueRepository.removeIssue(issue.getDescription());
-    emit dataChanged(createIndex(0, 0), createIndex(issueRepository.size(), 3)); // TODO: maybe: size - 1
+    endRemoveRows();
 }
 
 void IssuesModel::addIssue(const string& description, const User& user) {
     if (description.empty())
         throw std::runtime_error("description must not be empty");
+
     auto size = issueRepository.size();
+
     beginInsertRows(QModelIndex(), size, size);
     issueRepository.addIssue(Issue(description, user.getName()));
     endInsertRows();
 }
 
 void IssuesModel::solveIssue(int row, const User& user) {
-    if (row >= issueRepository.size() && row < 0) {
-        throw std::runtime_error("invalid issue selected");
-    }
+    throwIfRowIsInvalid(row);
     auto issue = issueRepository.getAll()[row];
+
+    if (issue.isClosed())
+        throw std::runtime_error("issue is not open. can only resolve open issues");
+
     issue.solve(user.getName());
     issueRepository.updateIssue(issue);
-    emit dataChanged(createIndex(row, 0), createIndex(row, 3));
+    emit dataChanged(createIndex(row, 1), createIndex(row, 3));
+}
+
+void IssuesModel::throwIfRowIsInvalid(int row) noexcept(false) {
+    if (row >= issueRepository.size() || row < 0) {
+        throw std::runtime_error("invalid issue selected");
+    }
 }
