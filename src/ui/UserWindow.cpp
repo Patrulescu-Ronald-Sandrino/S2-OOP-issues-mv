@@ -51,8 +51,12 @@ void UserWindow::initializeUI() {
 void UserWindow::connectSignalsAndSlots() {
     QObject::connect(issuesTableView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &UserWindow::handleSelectionChanged);
     QObject::connect(removeSelectedClosedIssueButton, &QPushButton::clicked, this, &UserWindow::handleRemoveIssueButton);
-    QObject::connect(addIssueForTesterButton, &QPushButton::clicked, this, &UserWindow::handleAddIssueButton);
-    QObject::connect(resolveIssueForProgrammerButton, &QPushButton::clicked, this, &UserWindow::handleResolveIssueButton);
+    if (user.getType() == "tester") {
+        QObject::connect(addIssueForTesterButton, &QPushButton::clicked, this, &UserWindow::handleAddIssueButton);
+    }
+    else if (user.getType() == "programmer") {
+        QObject::connect(resolveIssueForProgrammerButton, &QPushButton::clicked, this, &UserWindow::handleResolveIssueButton);
+    }
 }
 
 int UserWindow::getCurrentRow() const {
