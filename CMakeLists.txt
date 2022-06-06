@@ -6,6 +6,10 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
+file(COPY data/users.txt
+        DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY data/issues.txt
+        DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 find_package(Qt5 COMPONENTS
         Core
