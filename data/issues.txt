@@ -1,4 +1,4 @@
 issue1,open,user1,
-issue2,closed,user1,user2
-issue3,open,user3,
+issue3,closed,user3,user2
 issue4,closed,user3,user4
+issue5,closed,user1,user2

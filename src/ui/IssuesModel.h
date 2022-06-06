@@ -8,6 +8,7 @@
 
 #include <QAbstractTableModel>
 #include "../repository/IssueRepository.h"
+#include "../domain/User.h"
 
 class IssuesModel: public QAbstractTableModel {
 private:
@@ -24,6 +25,12 @@ public:
     QVariant data(const QModelIndex &index, int role) const override;
 
     Qt::ItemFlags flags(const QModelIndex &index) const override;
+
+    void removeIssue(const Issue& issue);
+
+    void addIssue(const string& description, const User& user);
+
+    void solveIssue(int row, const User& user);
 };
 
 

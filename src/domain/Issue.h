@@ -30,6 +30,9 @@ public:
 
     bool sameAs(const Issue& other) const;
 
+    bool isOpen() const { return status == "open"; }
+    bool isClosed() const { return status == "closed"; }
+
     void solve(const string &solver);
 
     friend ostream &operator<<(ostream &os, const Issue &issue);

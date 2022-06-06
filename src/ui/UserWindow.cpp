@@ -3,9 +3,9 @@
 //
 
 #include <QHBoxLayout>
-#include <QTableView>
 #include <QLabel>
 #include <QFormLayout>
+#include <QMessageBox>
 #include "UserWindow.h"
 #include "IssuesModel.h"
 
@@ -18,10 +18,11 @@ void UserWindow::initializeUI() {
     setWindowTitle(QString::fromStdString(user.getName() + " - " + user.getType()));
 
     auto mainLayout = new QVBoxLayout(this);
-    auto issuesTableView = new QTableView(this);
+    issuesTableView = new QTableView(this);
     mainLayout->addWidget(issuesTableView);
     issuesModel = new IssuesModel(issueRepository);
     issuesTableView->setModel(issuesModel);
+    issuesTableView->setSelectionMode(QAbstractItemView::SingleSelection);
 
     removeSelectedClosedIssueButton = new QPushButton("&Remove");
     mainLayout->addWidget(removeSelectedClosedIssueButton);
@@ -48,5 +49,62 @@ void UserWindow::initializeUI() {
 }
 
 void UserWindow::connectSignalsAndSlots() {
+    QObject::connect(issuesTableView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &UserWindow::handleSelectionChanged);
+    QObject::connect(removeSelectedClosedIssueButton, &QPushButton::clicked, this, &UserWindow::handleRemoveIssueButton);
+    QObject::connect(addIssueForTesterButton, &QPushButton::clicked, this, &UserWindow::handleAddIssueButton);
+    QObject::connect(resolveIssueForProgrammerButton, &QPushButton::clicked, this, &UserWindow::handleResolveIssueButton);
+}
 
+int UserWindow::getCurrentRow() const {
+    return issuesTableView->currentIndex().row();
+}
+
+void UserWindow::handleSelectionChanged() {
+    auto row = getCurrentRow();
+    if (row == -1) {
+        removeSelectedClosedIssueButton->setDisabled(true);
+        if (user.getType() == "programmer") {
+            resolveIssueForProgrammerButton->setDisabled(true);
+        }
+    }
+    else {
+        auto issue = issueRepository.getAll()[row];
+        removeSelectedClosedIssueButton->setEnabled(issue.isClosed());
+        if (user.getType() == "programmer") {
+            resolveIssueForProgrammerButton->setEnabled(issue.isOpen());
+        }
+    }
+}
+
+void UserWindow::handleRemoveIssueButton() {
+    auto issue = issueRepository.getAll()[getCurrentRow()];
+    try {
+        issuesModel->removeIssue(issue);
+    }
+    catch (exception& e) {
+        QMessageBox qMessageBox(QMessageBox::Information, "failed", e.what(), QMessageBox::Ok);
+        qMessageBox.exec();
+    }
+}
+
+void UserWindow::handleAddIssueButton() {
+    auto description = addIssueDescriptionLineEdit->text().toStdString();
+    try {
+        issuesModel->addIssue(description, user);
+    }
+    catch (exception& e) {
+        QMessageBox qMessageBox(QMessageBox::Information, "failed", e.what(), QMessageBox::Ok);
+        qMessageBox.exec();
+    }
+}
+
+void UserWindow::handleResolveIssueButton() {
+    auto row = getCurrentRow();
+    try {
+        issuesModel->solveIssue(row, user);
+    }
+    catch (exception& e) {
+        QMessageBox qMessageBox(QMessageBox::Information, "failed", e.what(), QMessageBox::Ok);
+        qMessageBox.exec();
+    }
 }

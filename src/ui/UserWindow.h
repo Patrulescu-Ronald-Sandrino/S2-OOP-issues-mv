@@ -9,6 +9,7 @@
 #include <QWidget>
 #include <QPushButton>
 #include <QLineEdit>
+#include <QTableView>
 #include "../repository/IssueRepository.h"
 #include "../domain/User.h"
 #include "IssuesModel.h"
@@ -23,6 +24,7 @@ public:
 
 private:
     IssuesModel* issuesModel{};
+    QTableView* issuesTableView{};
     QPushButton* removeSelectedClosedIssueButton{};
 
     QLineEdit* addIssueDescriptionLineEdit{};
@@ -32,6 +34,13 @@ private:
 
     void initializeUI();
     void connectSignalsAndSlots();
+
+    int getCurrentRow() const;
+private slots:
+    void handleSelectionChanged();
+    void handleRemoveIssueButton();
+    void handleAddIssueButton();
+    void handleResolveIssueButton();
 };
 
 
