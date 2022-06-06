@@ -33,6 +33,8 @@ public:
     void solveIssue(int row, const User& user);
 
 private:
+    bool isRowInvalid(int row) const;
+
     void throwIfRowIsInvalid(int row) noexcept(false);
 };
 

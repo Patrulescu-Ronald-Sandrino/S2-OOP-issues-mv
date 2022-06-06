@@ -52,6 +52,16 @@ QVariant IssuesModel::data(const QModelIndex &index, int role) const {
 }
 
 Qt::ItemFlags IssuesModel::flags(const QModelIndex &index) const {
+    auto row = index.row();
+    auto column = index.column();
+    if (isRowInvalid(row))
+        return QAbstractTableModel::flags(index);
+
+    auto issue = issueRepository.getAll()[row];
+    if (issue.isOpen() && column == 3) {
+        return static_cast<QFlag>(~Qt::ItemIsEnabled);
+    }
+
     return QAbstractTableModel::flags(index);
 }
 
@@ -91,8 +101,12 @@ void IssuesModel::solveIssue(int row, const User& user) {
     emit dataChanged(createIndex(row, 1), createIndex(row, 3));
 }
 
+bool IssuesModel::isRowInvalid(int row) const {
+    return row >= issueRepository.size() || row < 0;
+}
+
 void IssuesModel::throwIfRowIsInvalid(int row) noexcept(false) {
-    if (row >= issueRepository.size() || row < 0) {
+    if (isRowInvalid(row)) {
         throw std::runtime_error("invalid issue selected");
     }
 }
