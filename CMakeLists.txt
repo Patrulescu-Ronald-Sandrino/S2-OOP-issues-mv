@@ -13,7 +13,7 @@ find_package(Qt5 COMPONENTS
         Widgets
         REQUIRED)
 
-add_executable(issues_mv src/main.cpp)
+add_executable(issues_mv src/main.cpp src/domain/User.cpp src/domain/User.h src/ui/UserWindow.cpp src/ui/UserWindow.h src/domain/Issue.cpp src/domain/Issue.h src/repository/IssueRepository.cpp src/repository/IssueRepository.h src/ui/IssuesModel.cpp src/ui/IssuesModel.h)
 target_link_libraries(issues_mv
         Qt5::Core
         Qt5::Gui
